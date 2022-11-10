@@ -2,7 +2,7 @@
 
 # Elevate
 if [[ $EUID -ne 0 ]]; then
-    exec pkexec /usr/bin/PakOS-pi PakOS-pi-bin "$@"
+    exec pkexec /usr/bin/cachyos-pi cachyos-pi-bin "$@"
     exit 1
 fi
 
@@ -13,4 +13,4 @@ if [[ -v WAYLAND_DISPLAY ]]; then
 fi
 
 export XDG_RUNTIME_DIR="/run/user/0"
-exec /usr/bin/PakOS-pi-bin "$@"
+exec /usr/bin/cachyos-pi-bin "$@"

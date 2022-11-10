@@ -1,7 +1,5 @@
 // Copyright (C) 2022 Vladislav Nepogodin
 //
-// This file is part of PakOS new-cli-installer.
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -16,24 +14,24 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#include "config.hpp"
+#ifndef ALPM_HELPER_HPP
+#define ALPM_HELPER_HPP
 
-#include <memory>  // for unique_ptr, make_unique, operator==
+#include <alpm.h>
 
-static std::unique_ptr<Config> s_config = nullptr;
+#include <string>
+#include <vector>
 
-bool Config::initialize() noexcept {
-    if (s_config != nullptr) {
-        return false;
-    }
-    s_config = std::make_unique<Config>();
-    if (s_config) {
-        s_config->m_data["setupmode"] = false;
-    }
+void setup_alpm(alpm_handle_t* handle);
+void destroy_alpm(alpm_handle_t* handle);
+void refresh_alpm(alpm_handle_t** handle, alpm_errno_t* err);
 
-    return s_config.get();
-}
+int sync_trans(alpm_handle_t* handle, const std::vector<std::string>& targets, int flags, std::string& conflict_msg);
 
-auto Config::instance() -> Config* {
-    return s_config.get();
-}
+std::string display_targets(alpm_handle_t* handle, bool verbosepkglists, std::string& status_text);
+
+void add_targets_to_install(alpm_handle_t* handle, const std::vector<std::string>& vec);
+
+void add_targets_to_remove(alpm_handle_t* handle, const std::vector<std::string>& vec);
+
+#endif  // ALPM_HELPER_HPP

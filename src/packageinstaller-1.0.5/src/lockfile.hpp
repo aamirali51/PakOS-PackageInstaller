@@ -1,7 +1,5 @@
 // Copyright (C) 2022 Vladislav Nepogodin
 //
-// This file is part of PakOS new-cli-installer.
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -16,24 +14,24 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#include "config.hpp"
+#ifndef LOCKFILE_HPP
+#define LOCKFILE_HPP
 
-#include <memory>  // for unique_ptr, make_unique, operator==
+#include <string>
+#include <string_view>
 
-static std::unique_ptr<Config> s_config = nullptr;
+class LockFile final {
+ public:
+    explicit LockFile(const std::string_view& file_path)
+      : m_file_path(file_path.data()) { }
 
-bool Config::initialize() noexcept {
-    if (s_config != nullptr) {
-        return false;
-    }
-    s_config = std::make_unique<Config>();
-    if (s_config) {
-        s_config->m_data["setupmode"] = false;
-    }
+    bool isLocked() noexcept;
+    bool lock() noexcept;
+    bool unlock() noexcept;
 
-    return s_config.get();
-}
+ private:
+    int m_fd{};
+    std::string m_file_path{};
+};
 
-auto Config::instance() -> Config* {
-    return s_config.get();
-}
+#endif  // LOCKFILE_HPP

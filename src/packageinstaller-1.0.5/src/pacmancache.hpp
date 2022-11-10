@@ -1,7 +1,5 @@
 // Copyright (C) 2022 Vladislav Nepogodin
 //
-// This file is part of PakOS new-cli-installer.
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -16,24 +14,27 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#include "config.hpp"
+#ifndef PACMANCACHE_HPP
+#define PACMANCACHE_HPP
 
-#include <memory>  // for unique_ptr, make_unique, operator==
+#include "versionnumber.hpp"
 
-static std::unique_ptr<Config> s_config = nullptr;
+#include <alpm.h>
 
-bool Config::initialize() noexcept {
-    if (s_config != nullptr) {
-        return false;
-    }
-    s_config = std::make_unique<Config>();
-    if (s_config) {
-        s_config->m_data["setupmode"] = false;
-    }
+#include <map>
 
-    return s_config.get();
-}
+class PacmanCache {
+ public:
+    explicit PacmanCache(alpm_handle_t* handle) : m_handle(handle) { refresh_list(); }
 
-auto Config::instance() -> Config* {
-    return s_config.get();
-}
+    void refresh_list();
+    [[nodiscard]] std::map<QString, QStringList> get_candidates() const { return m_candidates; }
+
+    static QString getArch();
+
+ private:
+    std::map<QString, QStringList> m_candidates;
+    alpm_handle_t* m_handle{};
+};
+
+#endif  // PACMANCACHE_HPP

@@ -109,9 +109,9 @@ void MainWindow::setup() {
 
     connect(qApp, &QApplication::aboutToQuit, this, &MainWindow::cleanup, Qt::QueuedConnection);
     if (m_setup_assistant_mode) {
-        this->setWindowTitle(tr("PakOS Setup Assistant"));
+        this->setWindowTitle(tr("CachyOS Setup Assistant"));
     } else {
-        this->setWindowTitle(tr("PakOS Package Installer"));
+        this->setWindowTitle(tr("CachyOS Package Installer"));
     }
     m_ui->tabWidget->setCurrentIndex(Tab::Popular);
     QStringList column_names;
@@ -225,7 +225,7 @@ bool MainWindow::update() {
     }
     m_lockfile.lock();
     spdlog::error("problem updating sources");
-    QMessageBox::critical(this, tr("Error"), tr("There was a problem updating sources. Some sources may not have provided updates. For more info check: ") + "<a href=\"/var/log/PakOSpi.log\">/var/log/PakOSpi.log</a>");
+    QMessageBox::critical(this, tr("Error"), tr("There was a problem updating sources. Some sources may not have provided updates. For more info check: ") + "<a href=\"/var/log/cachyospi.log\">/var/log/cachyospi.log</a>");
     return false;
 }
 
@@ -367,16 +367,16 @@ void MainWindow::outputAvailable(const QString& output) {
 // Load info from the .txt files
 void MainWindow::loadTxtFiles() {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
-    cpr::Response r = cpr::Get(cpr::Url{"https://raw.githubusercontent.com/PakOS/packageinstaller/develop/pkglist.yaml"},
+    cpr::Response r = cpr::Get(cpr::Url{"https://raw.githubusercontent.com/cachyos/packageinstaller/develop/pkglist.yaml"},
         cpr::ProgressCallback([&]([[maybe_unused]] auto&& downloadTotal, [[maybe_unused]] auto&& downloadNow, [[maybe_unused]] auto&& uploadTotal,
                                   [[maybe_unused]] auto&& uploadNow, [[maybe_unused]] auto&& userdata) -> bool { return true; }));
 
     if (r.error.code == cpr::ErrorCode::OK) {
-        std::ofstream pkglistyaml{"/usr/lib/PakOS-pi/pkglist.yaml"};
+        std::ofstream pkglistyaml{"/usr/lib/cachyos-pi/pkglist.yaml"};
         pkglistyaml << r.text;
     }
 
-    QFile file("/usr/lib/PakOS-pi/pkglist.yaml");
+    QFile file("/usr/lib/cachyos-pi/pkglist.yaml");
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
         spdlog::error("Could not open: {}", file.fileName().toStdString());
         return;
@@ -833,7 +833,7 @@ void MainWindow::displayWarning(const QString& repo) {
 
     if (repo == "flatpaks") {
         displayed = &m_warning_flatpaks;
-        msg       = tr("PakOS includes this repository of flatpaks for the users' convenience only, and "
+        msg       = tr("CachyOS includes this repository of flatpaks for the users' convenience only, and "
                              "is not responsible for the functionality of the individual flatpaks themselves. "
                              "For more, consult flatpaks in the Wiki.");
     }
@@ -1569,12 +1569,12 @@ void MainWindow::on_pushInstall_clicked() {
 
 // About button clicked
 void MainWindow::on_pushAbout_clicked() {
-    displayAboutMsgBox(tr("About %1").arg(this->windowTitle()), "<p align=\"center\"><b><h2>" + this->windowTitle() + "</h2></b></p><p align=\"center\">" + tr("Version: ") + VERSION + "</p><p align=\"center\"><h3>" + tr("Package Installer for PakOS") + R"(</h3></p><p align="center"><a href="http://PakOS.org">http://PakOS.org</a><br /></p><p align="center">)" + tr("Copyright (c) PakOS") + "<br /><br /></p>",
-        "/usr/share/doc/PakOS-packageinstaller/license.html", true);
+    displayAboutMsgBox(tr("About %1").arg(this->windowTitle()), "<p align=\"center\"><b><h2>" + this->windowTitle() + "</h2></b></p><p align=\"center\">" + tr("Version: ") + VERSION + "</p><p align=\"center\"><h3>" + tr("Package Installer for CachyOS") + R"(</h3></p><p align="center"><a href="http://cachyos.org">http://cachyos.org</a><br /></p><p align="center">)" + tr("Copyright (c) CachyOS") + "<br /><br /></p>",
+        "/usr/share/doc/cachyos-packageinstaller/license.html", true);
 }
 // Help button clicked
 void MainWindow::on_pushHelp_clicked() {
-    QString url = "/usr/share/doc/PakOS-packageinstaller/PakOS-pi.html";
+    QString url = "/usr/share/doc/cachyos-packageinstaller/cachyos-pi.html";
     displayDoc(url, true);
 }
 
@@ -2016,7 +2016,7 @@ void MainWindow::on_pushCancel_clicked() {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     if (m_cmd.state() != QProcess::NotRunning) {
         if (QMessageBox::warning(this, tr("Quit?"),
-                tr("Process still running, quitting might leave the system in an unstable state.<p><b>Are you sure you want to exit PakOS Package Installer?</b>"),
+                tr("Process still running, quitting might leave the system in an unstable state.<p><b>Are you sure you want to exit CachyOS Package Installer?</b>"),
                 QMessageBox::Yes, QMessageBox::No)
             == QMessageBox::No) {
             return;

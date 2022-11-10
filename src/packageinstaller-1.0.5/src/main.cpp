@@ -64,8 +64,8 @@ namespace fs = std::filesystem;
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
-    QApplication::setWindowIcon(QIcon(":/icons/PakOS-pi.png"));
-    QApplication::setOrganizationName("PakOS");
+    QApplication::setWindowIcon(QIcon(":/icons/cachyos-pi.png"));
+    QApplication::setOrganizationName("CachyOS");
 
     QTranslator qtTran;
     if (qtTran.load(QLocale::system(), "qt", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
@@ -125,17 +125,17 @@ int main(int argc, char* argv[]) {
     }
     lock_file.lock();
 
-    static constexpr auto log_name = "/var/log/PakOSpi.log";
+    static constexpr auto log_name = "/var/log/cachyospi.log";
     if (fs::exists(log_name)) {
         std::ifstream currentfile{log_name};
         std::string file_data{std::istreambuf_iterator<char>(currentfile), std::istreambuf_iterator<char>()};
         std::ofstream oldlogfile{fmt::format("{}.old", log_name)};
-        oldlogfile << "-----------------------------------------------------------\nPakOSPI SESSION\n"
+        oldlogfile << "-----------------------------------------------------------\nCACHYOSPI SESSION\n"
                       "-----------------------------------------------------------\n";
         oldlogfile << file_data;
         fs::remove(log_name);
     }
-    auto logger = spdlog::create_async<spdlog::sinks::basic_file_sink_mt>("PakOS_logger", log_name);
+    auto logger = spdlog::create_async<spdlog::sinks::basic_file_sink_mt>("cachyos_logger", log_name);
     spdlog::set_default_logger(logger);
     spdlog::set_pattern("[%r][%^---%L---%$] %v");
     spdlog::set_level(spdlog::level::debug);
